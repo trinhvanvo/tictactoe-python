@@ -5,24 +5,6 @@ import os
 
 # Khởi tạo Pygame
 pygame.init()
-if "streamlit" in os.environ.get("PYTHONPATH", ""):
-    st.warning("Chế độ âm thanh bị tắt trong môi trường Streamlit.")
-else:
-    pygame.mixer.init()
-    pygame.mixer.music.load("your_audio_file.mp3")
-    pygame.mixer.music.set_volume(1.0)
-    pygame.mixer.music.play(-1)
-# Tải nhạc nền
-music_path = os.path.join(os.path.dirname(__file__), "nhacnen.mp3")  # Đảm bảo file nhạc có sẵn
-pygame.mixer.music.set_volume(1.0)  # Đặt âm lượng tối đa (1.0 là lớn nhất)
-if os.path.exists(music_path):
-    try:
-        pygame.mixer.music.load(music_path)
-        pygame.mixer.music.play(-1)  # Phát nhạc lặp vô hạn
-    except pygame.error as e:
-        print(f"Error loading music: {e}")
-else:
-    print(f"Music file not found at {music_path}")
 
 # Constants
 GRID_SIZE = 3  # Tic Tac Toe 3x3
