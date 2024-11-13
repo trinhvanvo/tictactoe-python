@@ -19,13 +19,13 @@ else:
     print(f"Music file not found at {music_path}")
 
 # Constants
-GRID_SIZE = 3  # Tic Tac Toe 3x3
-CELL_SIZE = 120
+GRID_SIZE = 11  # Tic Tac Toe 3x3
+CELL_SIZE = 40
 BOARD_SIZE = GRID_SIZE * CELL_SIZE
-WINDOW_WIDTH = BOARD_SIZE + 200  # Không gian cho các nút
+WINDOW_WIDTH = BOARD_SIZE + 120  # Không gian cho các nút
 WINDOW_HEIGHT = BOARD_SIZE + 150  # Không gian cho thông báo
-LINE_WIDTH = 10
-WIN_CONDITION = 3  # Điều kiện thắng
+LINE_WIDTH = 2
+WIN_CONDITION = 5  # Điều kiện thắng
 
 # Colors
 PURPLE = (142, 101, 132)  # Background color
@@ -38,7 +38,7 @@ GRID_COLOR = (255, 255, 255)
 
 # Screen setup
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption("Tic Tac Toe")
+pygame.display.set_caption("Nhóm 8")
 
 # Fonts
 font = pygame.font.Font(None, 36)
@@ -66,8 +66,9 @@ def draw_board():
             pygame.draw.rect(screen, GRID_COLOR, rect, LINE_WIDTH)
             if board[row][col] != '':
                 color = SOFT_YELLOW if board[row][col] == 'X' else LIGHT_PINK
-                text = big_font.render(board[row][col], True, color)  # Vẽ kí tự lớn X và O
-                screen.blit(text, (board_start_x + col * CELL_SIZE + 20, board_start_y + row * CELL_SIZE + 10))
+                text = font.render(board[row][col], True, color)  # Vẽ kí tự lớn X và O
+                text_rect = text.get_rect(center=rect.center)
+                screen.blit(text, text_rect)         
 
     # Vẽ số lần thắng
     score_offset_x = WINDOW_WIDTH - 550  # Vị trí hiển thị ở bên phải
@@ -130,8 +131,8 @@ def check_direction(row, col, d_row, d_col):
 
 def display_winner():
     if winner:
-        text = big_font.render(f'{winner} WINS!', True, WIN_TEXT_COLOR)
-        screen.blit(text, (WINDOW_WIDTH // 2 - text.get_width() // 2, WINDOW_HEIGHT - 575))
+        text = font.render(f'{winner} WIN!', True, WIN_TEXT_COLOR)
+        screen.blit(text, (WINDOW_WIDTH // 2 - text.get_width() // 2, WINDOW_HEIGHT - 578))
         pygame.display.update()
 
 def reset_game():
@@ -143,50 +144,51 @@ def reset_game():
     move_history.clear()
 
 # Main game loop
+show_welcome = True  # Biến kiểm tra có hiển thị màn hình chào mừng không
 while True:
-    draw_board()
-    if game_over:
-        display_winner()
+        draw_board()
+        if game_over:
+            display_winner()
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            mouseX, mouseY = pygame.mouse.get_pos()
-
-            # Kiểm tra nếu người chơi click vào nút
-            button_width = 150
-            button_height = 50
-            button_y = WINDOW_HEIGHT - button_height - 30
-            new_game_button_x = (WINDOW_WIDTH - 3 * button_width) // 2
-            undo_button_x = new_game_button_x + button_width + 20
-            ai_game_button_x = undo_button_x + button_width + 20
-
-            # Nút New Game
-            if new_game_button_x <= mouseX <= new_game_button_x + button_width and button_y <= mouseY <= button_y + button_height:
-                reset_game()
-
-            # Nút Undo
-            elif undo_button_x <= mouseX <= undo_button_x + button_width and button_y <= mouseY <= button_y + button_height:
-                if len(move_history) > 0:
-                    last_move = move_history.pop()  # Xóa nước đi cuối
-                    board[last_move[0]][last_move[1]] = ''  # Xóa nước đi đó khỏi bàn cờ
-                    current_player = 'O' if current_player == 'X' else 'X'  # Đổi lượt chơi
-                    game_over = False  # Tiếp tục trò chơi
-
-            # Nút Home (chuyển về màn hình chính)
-            elif ai_game_button_x <= mouseX <= ai_game_button_x + button_width and button_y <= mouseY <= button_y + button_height:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 pygame.quit()
-                subprocess.run(["python", "home.py"])  # Giả sử có file "home.py" để chạy màn hình chính
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouseX, mouseY = pygame.mouse.get_pos()
 
-            # Người chơi đánh dấu X hoặc O lên bàn cờ
-            else:
-                board_start_x = (WINDOW_WIDTH - BOARD_SIZE) // 2
-                board_start_y = 50
-                if board_start_x <= mouseX < board_start_x + BOARD_SIZE and board_start_y <= mouseY < board_start_y + BOARD_SIZE:
-                    row = (mouseY - board_start_y) // CELL_SIZE
-                    col = (mouseX - board_start_x) // CELL_SIZE
+                # Kiểm tra nếu người chơi click vào nút
+                button_width = 150
+                button_height = 50
+                button_y = WINDOW_HEIGHT - button_height - 30
+                new_game_button_x = (WINDOW_WIDTH - 3 * button_width) // 2
+                undo_button_x = new_game_button_x + button_width + 20
+                ai_game_button_x = undo_button_x + button_width + 20
+
+                # Nút New Game
+                if new_game_button_x <= mouseX <= new_game_button_x + button_width and button_y <= mouseY <= button_y + button_height:
+                    reset_game()
+
+                # Nút Undo
+                elif undo_button_x <= mouseX <= undo_button_x + button_width and button_y <= mouseY <= button_y + button_height:
+                    if len(move_history) > 0:
+                        last_move = move_history.pop()  # Xóa nước đi cuối
+                        board[last_move[0]][last_move[1]] = ''  # Xóa nước đi đó khỏi bàn cờ
+                        current_player = 'O' if current_player == 'X' else 'X'  # Đổi lượt chơi
+                        game_over = False  # Tiếp tục trò chơi
+
+                # Nút Home (chuyển về màn hình chính)
+                elif ai_game_button_x <= mouseX <= ai_game_button_x + button_width and button_y <= mouseY <= button_y + button_height:
+                    pygame.quit()
+                    subprocess.run(["python", "Home.py"])
+
+                # Người chơi đánh dấu X hoặc O lên bàn cờ
+                else:
+                    board_start_x = (WINDOW_WIDTH - BOARD_SIZE) // 2
+                    board_start_y = 50
+                    if board_start_x <= mouseX < board_start_x + BOARD_SIZE and board_start_y <= mouseY < board_start_y + BOARD_SIZE:
+                        row = (mouseY - board_start_y) // CELL_SIZE
+                        col = (mouseX - board_start_x) // CELL_SIZE
 
                     if board[row][col] == '' and not game_over:
                         board[row][col] = current_player
@@ -194,5 +196,4 @@ while True:
                         check_winner()
                         if not game_over:
                             current_player = 'O' if current_player == 'X' else 'X'  # Đổi lượt chơi
-
-    pygame.display.update()
+        pygame.display.update()
