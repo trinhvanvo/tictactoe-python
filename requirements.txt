@@ -1,1 +1,8 @@
 pygame
+pygame
+sys
+subprocess
+os
+hreading
+random
+time
